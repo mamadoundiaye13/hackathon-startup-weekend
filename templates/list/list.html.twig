@@ -12,6 +12,7 @@
                 <th scope="col">Promotion</th>
                 <th scope="col">Name project</th>
                 <th scope="col">Describe project</th>
+                <th scope="col">Inception date</th>
             </tr>
             </thead>
             <tbody>
@@ -28,9 +29,8 @@
                     <td> {{ project.author.CreateAt|date() }}</td>
                 <td><button type="button" class="btn btn-warning">Modifier</button></td>
                 <td><button type="button" class="btn btn-danger">Supprimer</button></td>
-                {% endfor %}
-
             </tr>
+            {% endfor %}
             </tbody>
         </table>
     {% endblock %}
