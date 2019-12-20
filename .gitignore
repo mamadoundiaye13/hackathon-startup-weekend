@@ -16,3 +16,4 @@
 ###< symfony/phpunit-bridge ###
 /.env
 /.idea
+/src/Migrations/Vers*
