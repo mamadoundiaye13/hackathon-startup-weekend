@@ -3,33 +3,31 @@
 namespace App\Controller;
 
 use App\Entity\HackathonRegistration;
+use App\Entity\ProjectStudent;
 use App\Form\HackathonRegistrationType;
+use App\Repository\ProjectStudentRepository;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    /**
-     * @Route("/", name="home")
-     */
-    public function index()
-    {
-        return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
-        ]);
-    }
 
     /**
-     * @Route("/create", name="create")
+     * @Route("/", name="create")
+     * @param Request $request
+     * @return RedirectResponse|Response
+     * @throws Exception
      */
     public function newHackathonAction(Request $request)
     {
         $hackathonRegistration = new HackathonRegistration();
+        $projet = new ProjectStudent();
+        $projet->setCreateAt(new \DateTime());
+        $projet->setUpdateAt(new \DateTime());
         $hackathonRegistration->setCreateAt(new \DateTime());
         $hackathonRegistration->setUpdateAt(new \DateTime());
 
@@ -37,22 +35,56 @@ class HomeController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // $form->getData() holds the submitted values
-            // but, the original `$hackathonRegistration` variable has also been updated
-            $hackathonRegistration = $form->getData();
 
-            // ... perform some action, such as saving the task to the database
-            // for example, if Task is a Doctrine entity, save it!
+            $hackathonRegistration = $form->getData();
+            $projet->setAuthor($hackathonRegistration);
+
              $entityManager = $this->getDoctrine()->getManager();
              $entityManager->persist($hackathonRegistration);
+             $entityManager->persist($projet);
              $entityManager->flush();
 
-            return $this->redirectToRoute('home');
+            return $this->redirectToRoute('projects_all');
         }
 
         return $this->render('create/new.html.twig', [
             'form' => $form->createView(),
         ]);
 
+    }
+
+    /**
+     * @Route("/project/{id}", name="project_show")
+     * @param $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        $project = $this->getDoctrine()
+            ->getRepository(ProjectStudent::class)
+            ->find($id);
+
+        if (!$project) {
+            throw $this->createNotFoundException(
+                'No project found for id '.$id
+            );
+        }
+
+        return $this->render('edit/project_show.html.twig', [
+            'project' => $project,
+        ]);
+    }
+
+    /**
+     * @Route("/projects", name="projects_all")
+     */
+    public function findAllProjects()
+    {
+        $repository = $this->getDoctrine()->getManager()->getRepository(ProjectStudent::class);
+        $projects = $repository->findAll();
+
+        return $this->render('list/list.html.twig', [
+            'projects' => $projects,
+        ]);
     }
 }
