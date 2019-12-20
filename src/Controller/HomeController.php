@@ -39,7 +39,7 @@ class HomeController extends AbstractController
              $entityManager->persist($projet);
              $entityManager->flush();
 
-            return $this->redirectToRoute('home');
+            return $this->redirectToRoute('projects_all');
         }
 
         return $this->render('create/new.html.twig', [

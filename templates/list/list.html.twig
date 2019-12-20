@@ -1,3 +1,36 @@
-{% for project in projects  %}
-    {{ project.author.firstName }}
-{% endfor %}
+{% extends 'base.html.twig' %}
+
+{% block main %}
+        <table class="table text-light">
+
+            <thead>
+            <tr>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Email address</th>
+                <th scope="col">Phone number</th>
+                <th scope="col">Promotion</th>
+                <th scope="col">Name project</th>
+                <th scope="col">Describe project</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for project in projects %}
+            <tr>
+                    <td> {{ project.author.firstName|e }} </td>
+                    <td> {{ project.author.LastName|e }}</td>
+                    <td> {{ project.author.EmailAddress|e }}</td>
+                    <td> {{ project.author.PhoneNumber|e }}</td>
+                    <td> {{ project.author.Promotion|e }}</td>
+                    <td> {{ project.author.NameProject|e }}</td>
+                    <td> {{ project.author.DescribeProject|e }}</td>
+                    <td> {{ project.author.CreateAt|date() }}</td>
+                <td><button type="button" class="btn btn-warning">Modifier</button></td>
+                <td><button type="button" class="btn btn-danger">Supprimer</button></td>
+                {% endfor %}
+
+            </tr>
+            </tbody>
+        </table>
+    {% endblock %}
