@@ -3,13 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\HackathonRegistration;
+use App\Entity\ProjectStudent;
 use App\Form\HackathonRegistrationType;
+use App\Repository\ProjectStudentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
@@ -30,6 +29,9 @@ class HomeController extends AbstractController
     public function newHackathonAction(Request $request)
     {
         $hackathonRegistration = new HackathonRegistration();
+        $projet = new ProjectStudent();
+        $projet->setCreateAt(new \DateTime());
+        $projet->setUpdateAt(new \DateTime());
         $hackathonRegistration->setCreateAt(new \DateTime());
         $hackathonRegistration->setUpdateAt(new \DateTime());
 
@@ -37,14 +39,13 @@ class HomeController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // $form->getData() holds the submitted values
-            // but, the original `$hackathonRegistration` variable has also been updated
-            $hackathonRegistration = $form->getData();
 
-            // ... perform some action, such as saving the task to the database
-            // for example, if Task is a Doctrine entity, save it!
+            $hackathonRegistration = $form->getData();
+            $projet->setAuthor($hackathonRegistration);
+
              $entityManager = $this->getDoctrine()->getManager();
              $entityManager->persist($hackathonRegistration);
+             $entityManager->persist($projet);
              $entityManager->flush();
 
             return $this->redirectToRoute('home');
@@ -54,5 +55,38 @@ class HomeController extends AbstractController
             'form' => $form->createView(),
         ]);
 
+    }
+
+    /**
+     * @Route("/project/{id}", name="product_show")
+     * @param $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        $product = $this->getDoctrine()
+            ->getRepository(ProjectStudent::class)
+            ->find($id);
+
+        if (!$product) {
+            throw $this->createNotFoundException(
+                'No product found for id '.$id
+            );
+        }
+
+        return new Response('Check out this great product: '.$product->getName());
+    }
+
+    /**
+     * @Route("/projects", name="product_all")
+     */
+    public function findAllProjects()
+    {
+        $repository = $this->getDoctrine()->getManager()->getRepository(ProjectStudent::class);
+        $projects = $repository->findAll();
+
+        return $this->render('all/all.html.twig', [
+            'projects' => $projects,
+        ]);
     }
 }
