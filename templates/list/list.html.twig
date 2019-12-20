@@ -1,3 +1,8 @@
-{% for project in projects  %}
-    {{ project.author.firstName }}
-{% endfor %}
+{% extends 'base.html.twig' %}
+{% block title %}Edit!{% endblock %}
+
+{% block main %}
+    {% for project in projects  %}
+        {{ project.author.firstName }}
+    {% endfor %}
+{% endblock %}
