@@ -6,7 +6,9 @@ use App\Entity\HackathonRegistration;
 use App\Entity\ProjectStudent;
 use App\Form\HackathonRegistrationType;
 use App\Repository\ProjectStudentRepository;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,6 +18,9 @@ class HomeController extends AbstractController
 
     /**
      * @Route("/", name="create")
+     * @param Request $request
+     * @return RedirectResponse|Response
+     * @throws Exception
      */
     public function newHackathonAction(Request $request)
     {
@@ -49,23 +54,25 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @Route("/project/{id}", name="product_show")
+     * @Route("/project/{id}", name="project_show")
      * @param $id
      * @return Response
      */
     public function show($id)
     {
-        $product = $this->getDoctrine()
+        $project = $this->getDoctrine()
             ->getRepository(ProjectStudent::class)
             ->find($id);
 
-        if (!$product) {
+        if (!$project) {
             throw $this->createNotFoundException(
-                'No product found for id '.$id
+                'No project found for id '.$id
             );
         }
 
-        return new Response('Check out this great product: '.$product->getName());
+        return $this->render('edit/project_show.html.twig', [
+            'project' => $project,
+        ]);
     }
 
     /**
