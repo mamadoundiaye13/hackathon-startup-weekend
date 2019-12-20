@@ -13,18 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    /**
-     * @Route("/", name="home")
-     */
-    public function index()
-    {
-        return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
-        ]);
-    }
 
     /**
-     * @Route("/create", name="create")
+     * @Route("/", name="create")
      */
     public function newHackathonAction(Request $request)
     {
@@ -78,14 +69,14 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @Route("/projects", name="product_all")
+     * @Route("/projects", name="projects_all")
      */
     public function findAllProjects()
     {
         $repository = $this->getDoctrine()->getManager()->getRepository(ProjectStudent::class);
         $projects = $repository->findAll();
 
-        return $this->render('all/all.html.twig', [
+        return $this->render('list/list.html.twig', [
             'projects' => $projects,
         ]);
     }
